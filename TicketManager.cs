@@ -11,15 +11,13 @@ namespace TicketingSystem2
         public List<TaskTicket> taskTickets = new List<TaskTicket>();
         public List<EnhancementTicket> enhancementTickets = new List<EnhancementTicket>();
 
-        string fileName;
         string bugHeaders;
         string taskHeaders;
         string enhancementHeaders;
 
 
-        public TicketManager (string fileName)
+        public TicketManager ()
         {
-            this.fileName = fileName;
         }
 
         public void loadTicketsFromFile(string ticketType, string filename)
@@ -68,9 +66,9 @@ namespace TicketingSystem2
         public void writeTicketsToFile(string ticketType, string filename)
         {
 
-            if (File.Exists(this.fileName))
+            if (File.Exists(filename))
             {
-                StreamWriter sw = new StreamWriter(this.fileName);
+                StreamWriter sw = new StreamWriter(filename);
 
                 if (ticketType == "bugTicket") {
                     sw.WriteLine(this.bugHeaders);
