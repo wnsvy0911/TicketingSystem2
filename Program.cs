@@ -22,15 +22,15 @@ namespace TicketingSystem2
                     
                 }
                 sr.Close(); */
-                TicketManager manager = new TicketManager("Tickets.csv");
+                TicketManager<TaskTicket> manager = new TicketManager<TaskTicket>("Tickets.csv", typeof(TaskTicket));
                 manager.loadTicketsFromFile();                
                 logger.Info("Program started");
 
               string choice;
             do
             {
-                Console.WriteLine("1) Read data from CSV file.");
-                Console.WriteLine("2) Create file from data.");
+                Console.WriteLine("\n1) List Tickets From File.");
+                Console.WriteLine("2) Create New Ticket And Write To File.");
                 Console.WriteLine("Enter any other key to exit.");
                 choice = Console.ReadLine();
                 logger.Info("User choice: {Choice}", choice);
@@ -45,9 +45,8 @@ namespace TicketingSystem2
                 }
                 else if (choice == "2")
                 {
-                    
-                    manager.writeTicketsToFile();
                     manager.createTicket();
+                    manager.writeTicketsToFile();
                    
                 }
             } while (choice == "1" || choice == "2");

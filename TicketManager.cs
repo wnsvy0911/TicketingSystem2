@@ -2,43 +2,59 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 
+
 namespace TicketingSystem2
 {
-    class TicketManager
+    public class TicketManager
     {
-        List<Ticket> Tickets = new List<Ticket>();
-        string fileName;
-        string headers;
+        public List<BugTicket> bugTickets = new List<BugTicket>();
+        public List<TaskTicket> taskTickets = new List<TaskTicket>();
+        public List<EnhancementTicket> enhancementTickets = new List<EnhancementTicket>();
 
-        public TicketManager(string fileName) 
+        string fileName;
+        string bugHeaders;
+        string taskHeaders;
+        string enhancementHeaders;
+
+
+        public TicketManager (string fileName)
         {
             this.fileName = fileName;
         }
 
-        public void loadTicketsFromFile()
+        public void loadTicketsFromFile(string ticketType, string filename)
         {
-            if (File.Exists(this.fileName))
+            if (File.Exists(filename))
             {
-                StreamReader sr1 = new StreamReader(this.fileName);
+                StreamReader sr1 = new StreamReader(filename);
                 Boolean firstLine = true;
                 while (!sr1.EndOfStream)
                 {
 
                     string line = sr1.ReadLine();
                     if(firstLine) {
-                        this.headers = line;
+
+                        if (ticketType == "bugTicket") {
+                            this.bugHeaders = line;
+                        } else if (ticketType == "taskTicket") {
+                            this.taskHeaders = line;
+                        } else if (ticketType == "enhancementTicket") {
+                            this.enhancementHeaders = line;
+                        } else {
+
+                        }
                         firstLine = false;
-                    } else {
-                    string[] arr = line.Split(',');
-        
-                        this.Tickets.Add(new Ticket(
-                            Int32.Parse(arr[0]),
-                            arr[1],
-                            arr[2],
-                            arr[3],
-                            arr[4],
-                            arr[5],
-                            this.createWatchersFromString(arr[6])));
+                    } else {                        
+                        if (ticketType == "bugTicket") {
+                            BugTicket.createTicketFromFile(line);
+                        } else if (ticketType == "taskTicket") {
+                            TaskTicket.createTicketFromFile(line);
+                        } else if (ticketType == "enhancementTicket") {
+                            EnhancementTicket.createTicketFromFile(line);
+                        } else {
+
+                        }
+                        //this.tickets.Add();
                     }
                 }
                 sr1.Close();
@@ -49,62 +65,58 @@ namespace TicketingSystem2
             }
         }
 
-        public void writeTicketsToFile()
+        public void writeTicketsToFile(string ticketType, string filename)
         {
+
             if (File.Exists(this.fileName))
             {
                 StreamWriter sw = new StreamWriter(this.fileName);
-                foreach (var ticket in this.Tickets) {
+
+                if (ticketType == "bugTicket") {
+                    sw.WriteLine(this.bugHeaders);
+                    foreach (var ticket in this.bugTickets)
+                    {
                         sw.WriteLine(ticket.formatTicket());
+                    }
+                } else if (ticketType == "taskTicket") {
+                    sw.WriteLine(this.taskHeaders);
+                    foreach (var ticket in this.taskTickets)
+                    {
+                        sw.WriteLine(ticket.formatTicket());
+                    }
+                } else if (ticketType == "enhancementTicket") {
+                    sw.WriteLine(this.enhancementHeaders);
+                    foreach (var ticket in this.enhancementTickets)
+                    {
+                        sw.WriteLine(ticket.formatTicket());
+                    }
+                } else {
+
                 }
+                
                 sw.Close();
             }
         }
 
-        public void listTickets() {
-            foreach (var ticket in this.Tickets) {
-                        Console.WriteLine(ticket.formatTicket());
+        public void listTickets(string ticketType) {
+            if (ticketType == "bugTicket") {
+                Console.WriteLine("\n" + this.bugHeaders);
+                foreach (var ticket in this.bugTickets) {
+                    Console.WriteLine(ticket.formatTicket());
                 }
-        }
+            } else if (ticketType == "taskTicket") {
+                Console.WriteLine("\n" + this.taskHeaders);
+                foreach (var ticket in this.taskTickets) {
+                    Console.WriteLine(ticket.formatTicket());
+                }
+            } else if (ticketType == "enhancementTicket") {
+                Console.WriteLine("\n" + this.enhancementHeaders);
+                foreach (var ticket in this.enhancementTickets) {
+                    Console.WriteLine(ticket.formatTicket());
+                }
+            } else {
 
-        public void createTicket() {
-
-            Console.WriteLine("Enter a summary");                        
-            string summary = Console.ReadLine();
-
-
-            Console.WriteLine("Enter the status (Open/Closed)");
-            string status = Console.ReadLine();
-
-            Console.WriteLine("Enter the priority (Low/Medium/High)");   
-            string priority = Console.ReadLine();
-
-            Console.WriteLine("Enter the submitter");
-            string submitter = Console.ReadLine();
-
-            Console.WriteLine("Enter the assigned");
-            string assigned = Console.ReadLine();
-
-            Console.WriteLine("Enter the watching");
-            List<string> watchers = new List<string>();
-            string watching = Console.ReadLine();
-            // while loop to add more
-            watchers.Add(watching);
-            this.Tickets.Add(new Ticket(
-                this.Tickets[this.Tickets.Count - 1].ticketId + 1,
-                summary,
-                status,
-                priority,
-                submitter,
-                assigned,
-                watchers
-            ));
-        }
-
-        public List<string> createWatchersFromString(string watchers) {
-            string[] watchersArry = watchers.Split('|');
-            List<string> watchersList = new List<string>(watchersArry);
-            return watchersList;
+            }
         }
         
     }
